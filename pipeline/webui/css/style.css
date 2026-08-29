@@ -1,0 +1,372 @@
+/* 全局样式 — 响应式，适配 pi-mono 侧栏 360-480px */
+
+:root {
+  --primary: #4a90d9;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --bg: #f5f6fa;
+  --card-bg: #fff;
+  --text: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --border: #e0e4e8;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  min-width: 320px;
+}
+
+/* 全局布局：左标签栏 + 左 1/3 板块 + 右 2/3 PDF 预览 */
+#app { display: flex; height: 100vh; overflow: hidden; }
+
+/* 左侧标签导航（竖向） */
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 52px;
+  flex-shrink: 0;
+  background: var(--card-bg);
+  border-right: 1px solid var(--border);
+  padding: 8px 4px;
+  gap: 2px;
+  z-index: 100;
+}
+#sidebar .logo {
+  font-size: 20px;
+  text-align: center;
+  padding: 6px 0 10px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+#sidebar .nav-links { display: flex; flex-direction: column; gap: 2px; }
+#sidebar .nav-links a {
+  padding: 7px 2px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-align: center;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+#sidebar .nav-links a:hover,
+#sidebar .nav-links a.active { background: var(--primary); color: #fff; }
+
+/* 左 1/3：板块视图容器 */
+#view-container { flex: 1 1 33%; min-width: 0; overflow-y: auto; padding: 12px; }
+
+/* 右 2/3：PDF 预览常驻 */
+#right-panel {
+  flex: 2 1 67%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: var(--bg);
+  gap: 6px;
+}
+
+/* 卡片 */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+
+/* 按钮 */
+.btn {
+  display: inline-block;
+  padding: 6px 14px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-success { background: var(--success); color: #fff; }
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-warning { background: var(--warning); color: #fff; }
+.btn-sm { padding: 3px 8px; font-size: 12px; }
+
+/* 表单 */
+.input, .select, .textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  background: var(--card-bg);
+}
+
+/* 标签 */
+.badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-success { background: #d4edda; color: var(--success); }
+.badge-warning { background: #fff3cd; color: var(--warning); }
+.badge-danger { background: #f8d7da; color: var(--danger); }
+.badge-info { background: #d1ecf1; color: var(--primary); }
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  pointer-events: none;
+}
+.toast-msg {
+  background: var(--text);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  margin-top: 6px;
+  animation: fadeInOut 3s ease;
+}
+.toast-msg.error { background: var(--danger); }
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  80% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* 状态指示器 */
+.status-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
+.status-dot.online { background: var(--success); }
+.status-dot.offline { background: var(--danger); }
+
+/* 搜索高亮 */
+mark { background: #fff3cd; padding: 0 2px; border-radius: 2px; }
+
+/* 置信度条 */
+.conf-bar {
+  display: flex;
+  height: 4px;
+  border-radius: 2px;
+  background: #eee;
+  margin-top: 3px;
+}
+.conf-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--success);
+}
+.conf-bar-fill.low { background: var(--warning); }
+
+/* 管线环节进度条（状态页） */
+.stage-row { margin-bottom: 10px; }
+.stage-row:last-of-type { margin-bottom: 0; }
+.stage-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 3px;
+}
+.stage-name { font-size: 13px; font-weight: 600; }
+.stage-idle { font-size: 12px; color: var(--text-secondary); }
+.stage-nums { font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.stage-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: #eee;
+  overflow: hidden;
+}
+.stage-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--primary);
+  transition: width 0.4s ease;
+}
+.stage-bar-fill.done { background: var(--success); }
+.stage-doc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 响应式 */
+@media (max-width: 480px) {
+  #sidebar { width: 44px; }
+  #view-container { padding: 8px; }
+  #view-container { flex-basis: 40%; }
+  #right-panel { flex-basis: 60%; }
+}
+
+/* P3.5-1 引用链 */
+.ipt {
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--card-bg);
+  color: var(--text);
+  outline: none;
+}
+.ipt:focus { border-color: var(--primary); }
+.cite-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--card-bg);
+}
+.cite-seq {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  flex-shrink: 0;
+  min-width: 28px;
+}
+.cite-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  word-break: break-all;
+}
+/* A4 页码回跳链接（引用清单 → 右侧预览跳页） */
+.jump-page {
+  color: var(--primary);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--primary);
+  cursor: pointer;
+}
+.jump-page:hover { opacity: 0.8; }
+
+/* P3.5-1 速览卡 */
+.tag {
+  display: inline-block;
+  background: var(--primary-soft, #e3f2fd);
+  color: var(--primary);
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 11px;
+  margin: 2px 4px 2px 0;
+}
+
+/* P3.5-1 引用核验 */
+.verify-result {
+  margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+}
+.verify-result.v-supported { border-left: 3px solid #4caf50; }
+.verify-result.v-not_supported { border-left: 3px solid #f44336; }
+.verify-result.v-unsupported_unclear { border-left: 3px solid #c98a00; }
+.verify-evidence {
+  margin-top: 4px;
+  color: var(--text);
+  background: #f5f5f5;
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-size: 11px;
+}
+.verify-warning {
+  margin-top: 4px;
+  color: #c98a00;
+  font-size: 11px;
+}
+.vbadge {
+  font-size: 11px;
+  margin-left: 6px;
+}
+.v-ok { color: #2e7d32; }
+.v-bad { color: #c62828; }
+.v-un { color: #c98a00; }
+
+/* B4 联网检索 */
+.lit-item {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 6px;
+  background: var(--card-bg);
+}
+.lit-title { font-size: 13px; font-weight: 600; }
+.lit-meta { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+.lit-abstract { font-size: 12px; margin-top: 4px; }
+.disclaimer-bar {
+  font-size: 11px;
+  color: #c98a00;
+  background: #fff8e1;
+  border: 1px solid #ffe082;
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+/* PDF.js 预览工具栏 */
+.pdf-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+#pdfBox canvas {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  background: #fff;
+}
+
+/* PDF.js 文本层（文字常态透明、选中蓝底白字鲜明对比，覆盖 canvas） */
+.textLayer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  line-height: 1;
+  text-align: initial;
+  text-size-adjust: none;
+  transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 1;
+  user-select: text;
+  -webkit-user-select: text;
+}
+.textLayer span,
+.textLayer br {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+/* 选中高亮：半透明蓝底 + 文字透明 → 原文从底下透出，无小字叠加，与 Word 高亮一致 */
+.textLayer ::selection {
+  background: rgba(26, 115, 232, 0.4);
+  color: transparent;
+}

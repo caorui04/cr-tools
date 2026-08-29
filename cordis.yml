@@ -1,0 +1,42 @@
+# cr-tools 产品组合蓝图（cordis.yml）
+#
+# 定位：产品插件组合的核心资产（KICKOFF §3），人可读、M4 便携包打包脚本消费。
+# 分层（重要）：
+# - 本文件 = 产品组合蓝图：描述 cr-tools 产品挂载哪些插件、注入哪些服务。
+# - 开发期实际生效组合 = ~/.dsh/profiles/web/cordis.patch.yml（profile patch 层，
+#   T2/T5 已验证的 insert 机制）。M4 make-portable 时按本蓝图生成便携包内组合。
+# - 与 DSH agent preset（~/.dsh/.agent-presets/）的关系：产品插件是 HOST 平面
+#   能力（跨会话共享），不属于任何单会话 preset。
+#
+# 格式参考：DSH 组合行式（id/name/disabled/inject/config；host 平面行注册到
+# 根 realm，agent 平面行需 group + isolate，见 config/agent-presets/*/agent.cordis.yml）。
+# 自研插件规范见 docs/plans/cr-plugin-spec.md。
+
+# ── 自研插件：cr-doc-review（文档审阅）──────────────────────────────
+# 状态：✅ 已部署（2026-08-14，T2 验收通过）
+# 能力：/cr-docs/read + /cr-docs/exists 路由 + client turnTail 链接清单预览
+# 源码：~/.dsh/profiles/web/plugins/cr-doc-review/（junction 同步）
+- id: cr-doc-review
+  name: 'cr-doc-review'
+  inject: ['fs', 'webServer', 'sandboxPolicy', 'workspaceRegistry']
+
+# ── 自研插件：cr-paper（论文工作台领域服务）─────────────────────────
+# 状态：✅ 已部署（T6 只读 5 路由 + T7 写代理 /cr-paper/pipe/*，2026-08-14 会话 4 验收通过）
+# 能力：
+#   - paper 领域只读服务（解析 workbench-state/bibliography/versions，T4 模块挂载）
+#   - 写操作代理到管线 HTTP 路由（T7：POST /cr-paper/pipe/* 白名单透传）——单一事实来源 = 管线（ADR-004）
+#   - Client 工作台 UI（M3，conversation.view 增量 Tab）
+# 注入：fs/webServer 为路由服务；领域服务经 M1 集成补充
+- id: cr-paper
+  name: 'cr-paper'
+  inject: ['fs', 'webServer', 'sandboxPolicy', 'workspaceRegistry']
+
+# ── DSH 内置能力（产品依赖，web 平台基座）────────────────────────────
+# 说明：conversation/workspace/slots/timer/theme 等由 web profile 基座提供，
+#       产品不重复声明；M1 集成时按实际所需能力在此补充引用行（不虚构）。
+
+# ── 组合原则（维护约定）──────────────────────────────────────────────
+# 1. 产品功能 → 自研插件行（本文件）；环境/部署适配 → profile patch 层
+# 2. 插件注入的服务必须在 inject 显式声明（cr-plugin-spec §2）
+# 3. 领域写逻辑只存在于管线（Python）；插件仅做只读视图与路由代理
+# 4. 改动生效需重启 dsh web；改插件源文件经 junction 同步，禁止 pnpm install

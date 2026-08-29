@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cr-tools 使用手册（PPT 版）</title>
+<style>
+  :root{
+    --brand:#1a5c45; --brand-dark:#0d3b2e; --brand-mid:#2e8b6e;
+    --accent:#2e8b6e; --accent-2:#c9a227;
+    --paper:#faf7f0; --card:#f2fbf7; --card-bd:#bfe3d5;
+    --muted:#66807a; --text:#2f3a37; --head:#0d3b2e;
+    --chip-bg:#e9f7f0; --chip-bd:#a8dcc6; --table-head:#e3f4ec;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--paper);color:var(--text);line-height:1.7}
+  /* 固定控制条 */
+  .bar{position:fixed;top:0;left:0;height:4px;background:var(--accent);z-index:20;transition:width .3s}
+  .dots{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:20}
+  .dots i{width:8px;height:8px;border-radius:50%;background:#cfe0d6}
+  .dots i.on{background:var(--accent)}
+  .pageno{position:fixed;right:20px;bottom:12px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.85);padding:2px 10px;border-radius:10px;z-index:20}
+  .hint{position:fixed;bottom:14px;left:20px;font-size:11px;color:#a9b8b1;z-index:20}
+  /* 稳健布局：正常文档流 + min-height 撑满，内容超高可滚动 */
+  .slide{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:64px clamp(20px,6vw,80px) 96px;text-align:center}
+  .slide.active{display:flex}
+  .slide.cover{background:linear-gradient(135deg,var(--brand-dark) 0%,var(--brand) 60%,var(--brand-mid) 100%);color:#fff;border-bottom:6px solid var(--accent-2)}
+  .slide.cover h1{font-size:clamp(30px,5vw,52px);margin-bottom:14px;letter-spacing:2px}
+  .slide.cover .sub{font-size:clamp(15px,2.2vw,20px);opacity:.93;margin-bottom:8px}
+  .slide.cover .sub2{font-size:15px;opacity:.88;margin-top:26px}
+  .slide.cover .meta{font-size:13px;opacity:.76;margin-top:34px}
+  .slide.cover .tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 16px;font-size:13px;margin-top:18px}
+  .slide h2{font-size:clamp(20px,3vw,28px);color:var(--head);margin-bottom:22px}
+  .slide h2 .no{color:var(--accent);margin-right:10px}
+  .slide p,.slide li{font-size:clamp(14px,1.8vw,17px)}
+  .card{background:var(--card);border:1px solid var(--card-bd);border-radius:12px;padding:16px clamp(16px,3vw,24px);margin:10px 0;max-width:min(900px,94vw);text-align:left}
+  .card strong{color:var(--brand)}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:8px;margin:16px 0;max-width:min(1000px,95vw)}
+  .step{background:var(--chip-bg);border:1px solid var(--chip-bd);border-radius:10px;padding:12px 14px;width:clamp(140px,16vw,190px);text-align:center;font-size:clamp(12px,1.5vw,14px)}
+  .step .n{display:inline-block;background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;line-height:22px;font-size:12px;margin-bottom:6px}
+  .arrow{display:flex;align-items:center;color:var(--accent);font-size:22px;font-weight:700}
+  .ref{display:inline-block;background:var(--brand-mid);color:#fff;border-radius:6px;padding:1px 8px;font-size:clamp(13px,1.7vw,15px);margin:0 2px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--chip-bg);border:1px solid var(--chip-bd);border-radius:18px;padding:6px 14px;font-size:14px;color:var(--brand)}
+  .chip .btn{border:1px solid var(--accent);border-radius:10px;background:#fff;color:var(--accent);font-size:11px;padding:2px 8px}
+  .chip .x{border:none;background:none;color:#9ab;font-size:12px}
+  .badge{display:inline-block;border-radius:10px;padding:2px 10px;font-size:12px;margin-left:6px}
+  .badge.ok{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+  .badge.ing{background:var(--chip-bg);color:var(--brand);border:1px solid var(--chip-bd)}
+  .grid2{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+  .grid2>div{flex:1;min-width:min(260px,80vw);max-width:520px}
+  .ws{display:flex;width:min(760px,92vw);min-height:250px;border:2px solid var(--brand-mid);border-radius:12px;overflow:hidden;margin-top:12px}
+  .ws .left{width:34%;min-width:150px;background:#f0f8f5;border-right:2px solid var(--card-bd);display:flex;flex-direction:column;justify-content:flex-end;padding:12px}
+  .ws .right{flex:1;display:flex;flex-direction:column}
+  .ws .tabs{display:flex;background:var(--table-head);border-bottom:2px solid var(--card-bd)}
+  .ws .tabs span{flex:1;text-align:center;padding:8px;font-size:13px;color:var(--brand)}
+  .ws .body{flex:1;display:flex}
+  .ws .lit{flex:1;background:#fbfdfc;border-right:1px dashed var(--card-bd);padding:10px}
+  .ws .lit b{display:block;font-size:12px;color:var(--brand-mid);margin-bottom:4px}
+  .ws .pdf{width:40%;min-width:120px;background:#fafbfa;padding:10px}
+  .ws .pdf b{display:block;font-size:12px;color:#99a}
+  .ws .lbl{font-size:12px;color:var(--brand);background:var(--chip-bg);border-radius:4px;padding:3px 8px;margin:3px 0;display:inline-block}
+  .ws .input{background:#fff;border:1px solid var(--accent);border-radius:6px;padding:9px;font-size:12px;color:#aab;margin-top:auto}
+  .table{border-collapse:collapse;margin:14px auto;font-size:clamp(13px,1.6vw,15px);width:min(860px,94vw)}
+  .table td,.table th{border:1px solid var(--card-bd);padding:8px 14px;text-align:left}
+  .table th{background:var(--table-head);color:var(--brand-dark)}
+  .tip{background:#fff7e6;border:1px solid #ecd9a0;border-radius:10px;padding:12px 18px;font-size:clamp(13px,1.6vw,14px);color:#7a5c1e;max-width:min(840px,94vw);text-align:left;margin-top:14px}
+  .kw{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .kw .col{background:var(--card);border:1px solid var(--card-bd);border-radius:10px;padding:14px 20px;min-width:min(300px,80vw);text-align:left}
+  .kw .col h4{color:var(--brand);margin-bottom:8px;font-size:16px}
+  .kw .col span{display:inline-block;background:var(--chip-bg);border:1px solid var(--card-bd);border-radius:14px;padding:3px 12px;margin:3px;font-size:13px;color:#444}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="dots" id="dots"></div>
+<div class="pageno" id="page"></div>
+<div class="hint">← → 或 空格 翻页 · 点击左右翻页</div>
+
+<div class="deck" id="deck">
+
+<!-- 1 封面 -->
+<section class="slide cover">
+  <h1>📚 cr-tools 论文工作台</h1>
+  <div class="sub">使 用 手 册 · PPT 版</div>
+  <div class="tag">人文社科 · 大学生论文写作</div>
+  <div class="sub2">读文献 → 引用 → 写草稿 → 与 AI 讨论 → 交付 DOCX</div>
+  <div class="meta">核心设计理念：降低正常引用的操作工作量 · v0.1（2026-08-17）</div>
+</section>
+
+<!-- 2 目录 -->
+<section class="slide">
+  <h2><span class="no">📑</span>目录</h2>
+  <div class="card" style="max-width:min(760px,92vw)">
+    <p><strong>一、快速上手</strong>　30 秒认识工作台</p>
+    <p><strong>二、核心功能：引用操作全流程</strong>　场景一 ~ 四</p>
+    <p><strong>三、与 AI 协作写论文</strong>　场景五 ~ 七（方向 / 点评 / 关键词）</p>
+    <p><strong>四、引用编号规则</strong></p>
+    <p><strong>五、文献入库</strong>　六、常见问题</p>
+  </div>
+</section>
+
+<!-- 3 认识工作台 -->
+<section class="slide">
+  <h2><span class="no">一</span>认识工作台</h2>
+  <div class="ws">
+    <div class="left">
+      <div class="lbl">💬 对话区（1/3）</div>
+      <div class="lbl" style="background:#f0f8f5;color:#667">和 AI 聊天、提问、点评草稿</div>
+      <div class="input">在这里输入消息…</div>
+    </div>
+    <div class="right">
+      <div class="tabs"><span>📊 工作台</span><span>📥 入库监控</span></div>
+      <div class="body">
+        <div class="lit">
+          <b>文献工作台</b>
+          <div class="lbl">🔗 引用链</div>
+          <div class="lbl">📖 速览卡</div>
+          <div class="lbl">🔍 检索</div>
+          <div class="lbl">📁 输入资料</div>
+          <div class="lbl">📝 草稿</div>
+        </div>
+        <div class="pdf"><b>📄 PDF 预览（可拖拽）</b><div style="font-size:11px;color:#bbb;margin-top:6px">翻页 / 缩放 / 适宽<br>拖选文字可引用</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="tip">💡 左边和 AI 聊，右边写论文 —— 引用时两边联动，这就是「AI 对话 × 资料联动」</div>
+</section>
+
+<!-- 新建论文项目 -->
+<section class="slide">
+  <h2><span class="no">🆕</span>新建论文项目</h2>
+  <p class="sub" style="margin-bottom:18px">工作台顶部「📚 项目」下拉旁点「<strong>＋ 新建论文项目</strong>」，输入论文题目</p>
+  <div class="grid2">
+    <div class="card"><p><strong>✏️ 一个项目 = 一篇论文</strong></p><p style="font-size:14px;color:var(--muted)">引用清单、草稿、版本记录都在这个项目里，多篇论文互不干扰</p></div>
+    <div class="card"><p><strong>📄 自动带空模板草稿</strong></p><p style="font-size:14px;color:var(--muted)">新建即有一份空模板（含<strong>工作台快速上手 + 排版说明</strong>），照着写即可</p></div>
+  </div>
+  <div class="card" style="max-width:min(780px,94vw);text-align:left;margin-top:14px">
+    <p style="font-size:14px"><strong>🎯 显式指定「这是论文项目」</strong>——不用手动建目录、不用等自动识别，点一下就建好一个论文项目。</p>
+    <p style="font-size:14px;color:var(--muted);margin-top:6px">项目也可来自便携包预置（<code>papers/</code> 目录），或由文档导入（见「导入已有草稿」）。</p>
+  </div>
+</section>
+
+<!-- 4 引用流程总览 -->
+<section class="slide">
+  <h2><span class="no">二</span>引用操作：四大场景总览</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>📝 写论文引用<br>拖选 → 粘贴 → 确认<br>自动 <span class="ref">[N]</span> + 清单</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>💬 与 AI 讨论引用<br>拖选 → 会话框 chip<br>引用带来源给 AI</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>🔍 检索引用<br>本地 / 联网检索<br>收藏 → 登记</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>🔗 引用链面板<br>清单管理 / 插入 <span class="ref">[N]</span><br>核验 / 导出</div>
+  </div>
+  <div class="tip">💡 共同目标：<strong>你只管读和选，编号、清单、来源标注自动完成</strong></div>
+</section>
+
+<!-- 5 场景一 -->
+<section class="slide">
+  <h2><span class="no">场景一</span>写论文时引用（最常用）</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>📄 打开 PDF 预览<br>（速览卡 / 检索结果）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>🖱️ 鼠标拖选一段话<br>（文字变蓝即选中）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>📋 草稿框 Ctrl+V<br>弹出确认小卡片</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>✅ 点「确认引用」<br>段尾出现 <span class="ref">[1]</span> + 清单登记</div>
+  </div>
+  <div class="card" style="max-width:min(820px,94vw)">
+    <p>📎 是否确认引用？ <strong>《档案与文化产业》· 第 3 页</strong></p>
+    <p style="font-size:14px;color:var(--muted)">…文化产业档案是城市记忆的重要载体…</p>
+    <p style="margin-top:8px">[ <span style="color:var(--accent);font-weight:700">确认引用</span> ]　[ <span style="color:#9aa">仅粘贴</span> ]</p>
+  </div>
+  <div class="tip">💡 不用手打来源、不用手写编号、不用维护参考文献 —— 三步完成</div>
+</section>
+
+<!-- 6 场景二 -->
+<section class="slide">
+  <h2><span class="no">场景二</span>与 AI 讨论时引用</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>🖱️ PDF 拖选一段话<br>（文字变蓝）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>📎 输入框上方出现<br>蓝色来源 chip</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>↩️ 点「插入」<br>引用自动进输入框</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>✍️ 补充问题 → 发送<br>AI 结合来源回答</div>
+  </div>
+  <div style="margin:18px 0"><span class="chip">📎 来源 《档案与文化产业》· 第 3 页 <span class="btn">插入</span> <span class="x">✕</span></span></div>
+  <div class="card" style="max-width:min(760px,94vw)">
+    <p>💬 你：根据我引用的这段，档案与文化产业可以怎么结合？</p>
+    <p>🤖 AI：结合您引用的城市记忆框架，可从 <strong>档案资源数字化 × 文旅叙事</strong> 切入……（依据所引文献）</p>
+  </div>
+  <div class="tip">💡 不用手打「根据《××》第几页」—— AI 能看到引用来源，回答更有依据</div>
+</section>
+
+<!-- 7 场景三 -->
+<section class="slide">
+  <h2><span class="no">场景三</span>检索文献并引用</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>🔍 检索 Tab<br>本地 / 联网（中英）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>⌨️ 输入关键词<br>筛选来源 / 勾选</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>☆ 收藏勾选 / 登记<br>OA 文献可直接下载入库</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>📋 收藏清单<br>导出 CSV / 复制引用信息</div>
+  </div>
+  <div class="grid2">
+    <div class="card"><p><strong>本地检索</strong>：知识库向量语义检索（"档案与文化" 命中相关已入库文献）</p></div>
+    <div class="card"><p><strong>联网检索</strong>：中文（百度学术）/ 国际（OpenAlex·DOAJ·arXiv），输入中文自动英译联合搜索</p></div>
+  </div>
+  <div class="tip">💡 检索 → 收藏 → 导出一步到位；开放获取文献一键「⬇ 下载入库」进知识库</div>
+</section>
+
+<!-- 8 场景四 -->
+<section class="slide">
+  <h2><span class="no">场景四</span>引用链面板（管理你的引用）</h2>
+  <div class="grid2">
+    <div class="card"><p><strong>📋 清单</strong>：所有已登记引用（编号/来源/页码/片段），<strong>重复引用自动复用同一编号</strong></p></div>
+    <div class="card"><p><strong>↩️ 插入草稿</strong>：光标处一键插入 <span class="ref">[N]</span> 标记</p></div>
+    <div class="card"><p><strong>✔️ 核验</strong>：一键核验引用真实性（置信度提示）</p></div>
+    <div class="card"><p><strong>📤 导出</strong>：按格式生成参考文献列表（配合 DOCX 交付）</p></div>
+  </div>
+  <div class="card" style="max-width:min(720px,94vw)">
+    <p><span class="ref">[1]</span> 档案与文化产业 —— 王 ×× · 第 3 页 <span style="color:#888;font-size:13px">（已核验 ✓）</span></p>
+    <p><span class="ref">[2]</span> 海外中国史研究文献综述 —— 第 12 页</p>
+    <p><span class="ref">[1]</span> <span style="color:#2e7d32;font-size:13px">已复用（不重复登记）</span></p>
+  </div>
+</section>
+
+<!-- 9 场景五 -->
+<section class="slide">
+  <h2><span class="no">场景五</span>与 AI 讨论论文方向</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>📖 先读文献<br>速览卡看摘要 / 检索定位</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>💬 对话区提问<br>带上研究问题</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>📎 需要时用 chip<br>把具体文献带给 AI</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>🧭 AI 给方向建议<br>梳理缺口 / 可切入角度</div>
+  </div>
+  <div class="card" style="max-width:min(800px,94vw)">
+    <p>💬 你：我打算写档案与文化产业的结合方向，已有这些文献（引用），帮我梳理研究缺口和可切入的角度</p>
+    <p>🤖 AI：综合您引用的文献，现有研究多集中于<b>数字化保存</b>，对<b>文化叙事转化</b>着墨较少，可考虑以"档案资源 → 文旅产品"为主线……</p>
+  </div>
+  <div class="tip">💡 先看概貌、再带具体问题 + 引用去问，AI 的回答更有针对性</div>
+</section>
+
+<!-- 10 场景六 -->
+<section class="slide">
+  <h2><span class="no">场景六</span>让 AI 点评草稿</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>✍️ 草稿编辑器写作<br>Ctrl+S 保存（自动快照）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>📋 复制草稿发给 AI<br>（可分段 + 注明"请点评"）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>🔍 用点评模板提问<br>结构 / 论证 / 引用</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>✏️ 按建议修改<br>时间线可回溯版本</div>
+  </div>
+  <div class="card" style="max-width:min(800px,94vw)">
+    <p>💬 请点评这段论述：结构是否清晰？论证是否充分？引用是否恰当？给出修改建议。</p>
+    <p style="font-size:14px;color:var(--muted)">🤖 建议：第二段与论点的衔接较突兀，可补充过渡句；引用 <span class="ref">[2]</span> 处建议补充页码；结尾可回扣开头提出的问题……</p>
+  </div>
+  <div class="tip">💡 配套：🕘 时间线（版本找回）· 疑似引用自动扫描提醒（保存后建议面板提示登记 <span class="ref">[N]</span>）</div>
+</section>
+
+<!-- 11 导入已有草稿 -->
+<section class="slide">
+  <h2><span class="no">📄</span>导入已有草稿（.docx / .md）</h2>
+  <p class="sub" style="margin-bottom:18px">草稿编辑器顶部「↑ 上传草稿」——把旧稿直接搬进来</p>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>草稿区点「<strong>↑ 上传草稿</strong>」<br>选 docx / md 文件</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>📥 <strong>替换</strong>当前草稿<br>（不新建，引用链跟它走）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>🗂 自动生成版本记录<br>（时间线可查、内容留着）</div>
+  </div>
+  <div class="card" style="max-width:min(820px,94vw);text-align:left;margin-top:14px">
+    <p>📄 <strong>排版说明</strong>：上传的 Word（.docx）会<strong>自动转成 Markdown</strong>——正文结构、分段、小标题基本保留。</p>
+    <p style="font-size:14px;color:var(--warn, #b7791f);margin-top:6px">⚠️ 复杂排版（页眉页脚 / 目录自动编号 / 页边距 / 分栏等）不在当前版本，安排在<strong>下一步功能拓展</strong>。建议最终交付前用「导出 DOCX」生成正式文档再微调格式。</p>
+    <p style="font-size:14px;color:var(--muted);margin-top:6px">你只需<strong>专注写好正文 + 引用 + 结构</strong>，排版留给交付阶段。</p>
+  </div>
+</section>
+
+<!-- 12 场景七 -->
+<section class="slide">
+  <h2><span class="no">场景七</span>让 AI 帮你想检索关键词（中英双语）</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>💬 输入你的论点<br>告诉 AI 研究方向</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>🔤 AI 给关键词组<br><b>中英文各一组</b>（含同义词）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>🔍 用关键词去检索<br>中文查本地 / 英文切国际</div>
+  </div>
+  <div class="kw">
+    <div class="col"><h4>🇨🇳 中文关键词</h4>
+      <span>数字乡村</span><span>乡村振兴</span><span>农村数字化</span><span>农民收入</span><span>收入效应</span>
+    </div>
+    <div class="col"><h4>🇬🇧 English Keywords</h4>
+      <span>digital village</span><span>rural digitalization</span><span>farmers' income</span><span>income effect</span><span>ICT adoption</span>
+    </div>
+  </div>
+  <div class="tip">💡 检索面板自带 <strong>中文自动英译</strong>（输入中文自动生成英文联合搜索）+ 翻译可见可改（改后重新搜索）</div>
+</section>
+
+<!-- 12 编号规则 -->
+<section class="slide">
+  <h2><span class="no">四</span>引用编号规则（<span class="ref">[N]</span> 的秘密）</h2>
+  <div class="card" style="max-width:min(760px,94vw);text-align:left">
+    <p>① 每篇文献<strong>第一次登记</strong>获得编号 <span class="ref">[1]</span>、<span class="ref">[2]</span>……</p>
+    <p>② <strong>重复引用同一文献</strong>：自动复用原编号，提示「已复用」</p>
+    <p>③ <span class="ref">[N]</span> 与引用清单<strong>一一对应</strong>，导出参考文献自动按编号排列</p>
+    <p>④ 登记失败（网络/超时）<strong>不丢你的文字</strong>：原文自动落回草稿</p>
+  </div>
+  <div class="grid2">
+    <div class="card"><p>✍️ 草稿：<span style="background:var(--chip-bg);padding:2px 6px;border-radius:4px">…文化产业档案是城市记忆的重要载体<span class="ref">[1]</span></span></p></div>
+    <div class="card"><p>📋 清单：[1] 档案与文化产业 · 第 3 页</p></div>
+  </div>
+</section>
+
+<!-- 13 文献入库 -->
+<section class="slide">
+  <h2><span class="no">五</span>文献入库（把资料收进知识库）</h2>
+  <div class="grid2">
+    <div class="card"><p><strong>📤 批量上传</strong>（入库监控 Tab）</p>
+      <p style="font-size:14px;color:var(--muted)">拖拽 / 多选 PDF·docx·md → 自动后台入库<br>重复文件自动判重跳过 · 监控实时进度<br>①识别 → ②OCR → ③翻译 → ④索引</p>
+    </div>
+    <div class="card"><p><strong>📁 输入资料索引</strong>（文献工作台）</p>
+      <p style="font-size:14px;color:var(--muted)">项目资料（PDF/docx/图片）→ 点「🔍 索引」入库<br>列表显示状态徽标（10 秒自动刷新）</p>
+      <p>示例文件.pdf <span class="badge ok">✅ 已入库</span><br>新建资料.md <span class="badge ing">⏳ 入库中</span></p>
+    </div>
+  </div>
+  <div class="tip">💡 扫描件 PDF（无文字层）自动 OCR；图片/表格类资料当前只支持预览、不入库</div>
+</section>
+
+<!-- 14 常见问题 -->
+<section class="slide">
+  <h2><span class="no">六</span>常见问题</h2>
+  <div class="card" style="max-width:min(860px,94vw);text-align:left">
+    <p>❓ <strong>复制后没弹确认卡 / 没出现 chip？</strong> → 需在 <b>PDF 预览文字层</b> 拖选（文字变蓝）、≥5 字、10 分钟内有效</p>
+    <p>❓ <strong>编号乱了？</strong> → 系统自动管理、重复复用，以引用链面板为准</p>
+    <p>❓ <strong>检索 score 都很低？</strong> → 语义检索正常现象，<b>看排序不看分数</b></p>
+    <p>❓ <strong>PDF 一直停在 OCR？</strong> → 扫描件较慢（复杂版面 1-2 分钟/页）；超 30 分钟自动跳过该页并标注，不阻塞整篇</p>
+    <p>❓ <strong>云端 Key 填在哪？</strong> → pipeline/config.yaml → models.llm.cloud.api_key</p>
+  </div>
+  <p style="margin-top:22px;color:var(--brand);font-weight:700">读文献 → 引用 → 写草稿 → 与 AI 讨论 → 交付 DOCX 🎓</p>
+</section>
+
+</div>
+
+<script>
+  var slides = document.querySelectorAll('.slide');
+  var cur = 0;
+  var dotsEl = document.getElementById('dots');
+  for (var i = 0; i < slides.length; i++) {
+    var d = document.createElement('i');
+    if (i === 0) d.className = 'on';
+    dotsEl.appendChild(d);
+  }
+  var dots = dotsEl.querySelectorAll('i');
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    for (var k = 0; k < slides.length; k++) slides[k].classList.toggle('active', k === cur);
+    document.getElementById('page').textContent = '第 ' + (cur + 1) + ' 页 / 共 ' + slides.length + ' 页';
+    document.getElementById('bar').style.width = ((cur + 1) / slides.length * 100) + '%';
+    for (var j = 0; j < dots.length; j++) dots[j].className = (j === cur) ? 'on' : '';
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') { e.preventDefault(); show(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') { e.preventDefault(); show(cur - 1); }
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.card') || e.target.closest('.chip')) return;
+    show(e.clientX > window.innerWidth * 0.5 ? cur + 1 : cur - 1);
+  });
+  show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cr-tools 安装指导手册（PPT 版）</title>
+<style>
+  :root{
+    --brand:#1a5c45; --brand-dark:#0d3b2e; --brand-mid:#2e8b6e;
+    --accent:#2e8b6e; --accent-2:#c9a227;
+    --paper:#faf7f0; --card:#f2fbf7; --card-bd:#bfe3d5;
+    --muted:#66807a; --text:#2f3a37; --head:#0d3b2e;
+    --chip-bg:#e9f7f0; --chip-bd:#a8dcc6; --table-head:#e3f4ec;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"Microsoft YaHei","PingFang SC",sans-serif;background:var(--paper);color:var(--text);line-height:1.7}
+  .bar{position:fixed;top:0;left:0;height:4px;background:var(--accent);z-index:20;transition:width .3s}
+  .dots{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:20}
+  .dots i{width:8px;height:8px;border-radius:50%;background:#cfe0d6}
+  .dots i.on{background:var(--accent)}
+  .pageno{position:fixed;right:20px;bottom:12px;font-size:12px;color:var(--muted);background:rgba(255,255,255,.85);padding:2px 10px;border-radius:10px;z-index:20}
+  .hint{position:fixed;bottom:14px;left:20px;font-size:11px;color:#a9b8b1;z-index:20}
+  .slide{display:none;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;padding:64px clamp(20px,6vw,80px) 96px;text-align:center}
+  .slide.active{display:flex}
+  .slide.cover{background:linear-gradient(135deg,var(--brand-dark) 0%,var(--brand) 60%,var(--brand-mid) 100%);color:#fff;border-bottom:6px solid var(--accent-2)}
+  .slide.cover h1{font-size:clamp(30px,5vw,52px);margin-bottom:14px;letter-spacing:2px}
+  .slide.cover .sub{font-size:clamp(15px,2.2vw,20px);opacity:.93;margin-bottom:8px}
+  .slide.cover .sub2{font-size:15px;opacity:.88;margin-top:26px}
+  .slide.cover .meta{font-size:13px;opacity:.76;margin-top:34px}
+  .slide.cover .tag{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:4px 16px;font-size:13px;margin-top:18px}
+  .slide h2{font-size:clamp(20px,3vw,28px);color:var(--head);margin-bottom:22px}
+  .slide h2 .no{color:var(--accent);margin-right:10px}
+  .slide p,.slide li{font-size:clamp(14px,1.8vw,17px)}
+  .card{background:var(--card);border:1px solid var(--card-bd);border-radius:12px;padding:16px clamp(16px,3vw,24px);margin:10px 0;max-width:min(900px,94vw);text-align:left}
+  .card strong{color:var(--brand)}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:8px;margin:16px 0;max-width:min(1000px,95vw)}
+  .step{background:var(--chip-bg);border:1px solid var(--chip-bd);border-radius:10px;padding:12px 14px;width:clamp(150px,17vw,200px);text-align:center;font-size:clamp(12px,1.5vw,14px)}
+  .step .n{display:inline-block;background:var(--accent);color:#fff;border-radius:50%;width:22px;height:22px;line-height:22px;font-size:12px;margin-bottom:6px}
+  .arrow{display:flex;align-items:center;color:var(--accent);font-size:22px;font-weight:700}
+  .code{background:#102d24;color:#b8f0dc;border-radius:8px;padding:14px 22px;font-family:Consolas,monospace;font-size:clamp(12px,1.4vw,14px);text-align:left;max-width:min(780px,94vw);line-height:1.9;margin:10px 0}
+  .code .c{color:#7fb9a5}
+  .table{border-collapse:collapse;margin:14px auto;font-size:clamp(13px,1.6vw,15px);width:min(880px,94vw)}
+  .table td,.table th{border:1px solid var(--card-bd);padding:8px 14px;text-align:left}
+  .table th{background:var(--table-head);color:var(--brand-dark)}
+  .tip{background:#fff7e6;border:1px solid #ecd9a0;border-radius:10px;padding:12px 18px;font-size:clamp(13px,1.6vw,14px);color:#7a5c1e;max-width:min(840px,94vw);text-align:left;margin-top:14px}
+  .badge{display:inline-block;border-radius:10px;padding:2px 10px;font-size:12px}
+  .badge.a{background:#e8f5e9;color:#2e7d32;border:1px solid #a5d6a7}
+  .badge.b{background:var(--chip-bg);color:var(--brand);border:1px solid var(--chip-bd)}
+</style>
+</head>
+<body>
+<div class="bar" id="bar"></div>
+<div class="dots" id="dots"></div>
+<div class="pageno" id="page"></div>
+<div class="hint">← → 或 空格 翻页 · 点击左右翻页</div>
+
+<div class="deck" id="deck">
+
+<!-- 1 封面 -->
+<section class="slide cover">
+  <h1>🛠️ cr-tools 论文工作台</h1>
+  <div class="sub">安 装 指 导 手 册 · PPT 版</div>
+  <div class="tag">人文社科 · 大学生论文写作</div>
+  <div class="sub2" style="margin-top:24px;font-size:15px;opacity:.85">便携包免安装 · 源码构建 · Key 配置 · 模型下载</div>
+  <div class="meta">v0.1（2026-08-17）</div>
+</section>
+
+<!-- 2 两种方式对比 -->
+<section class="slide">
+  <h2><span class="no">一</span>两种安装方式，选一种</h2>
+  <table class="table">
+    <tr><th></th><th>✅ 方式 A：便携包（推荐）</th><th>🔧 方式 B：源码构建</th></tr>
+    <tr><td>适合</td><td>普通使用者（只想用）</td><td>开发者 / 维护者（想改代码）</td></tr>
+    <tr><td>需要装什么</td><td><strong>什么都不用装</strong></td><td>Node.js + Python</td></tr>
+    <tr><td>步骤</td><td>解压 → 下模型 → 双击启动</td><td>4 步命令</td></tr>
+    <tr><td>体积</td><td>full 6GB / lite 1.2GB</td><td>源码 2MB + 依赖自动装</td></tr>
+    <tr><td>随身</td><td>✅ 整个文件夹拷 U 盘</td><td>❌ 固定在开发机</td></tr>
+  </table>
+  <div class="tip">💡 不会命令行？选方式 A 的 <strong>full 包</strong>：解压 → 双击 start.bat → 浏览器打开，全程零命令行</div>
+</section>
+
+<!-- 3 方式A 4步 -->
+<section class="slide">
+  <h2><span class="no">二</span>方式 A：便携包安装（4 步）</h2>
+  <div class="flow">
+    <div class="step"><div class="n">1</div>📦 获取便携包<br>full（含模型 6GB）<br>lite（无模型 1.2GB）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">2</div>📂 解压到任意位置<br>建议英文路径<br>（U 盘也行）</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">3</div>⬇️ （lite 包）下模型<br>运行 download-models.ps1<br>国内镜像自动下载</div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="n">4</div>🚀 双击 start.bat<br>浏览器打开 <b>3180</b><br>（可选先填 Key）</div>
+  </div>
+  <div class="card" style="max-width:min(820px,94vw)">
+    <p>🔍 启动后浏览器访问：<strong>http://127.0.0.1:3180</strong>（工作台）· <strong>http://127.0.0.1:8737/status</strong>（管线，200 即正常）</p>
+    <p style="font-size:14px;color:var(--muted)">start.bat 自动启动：管线服务（8737）+ 嵌入服务（8083，full 包）+ 主界面（3180）</p>
+  </div>
+</section>
+
+<!-- 论文项目与工作区 -->
+<section class="slide">
+  <h2><span class="no">📁</span>论文项目与工作区（开箱即用）</h2>
+  <p class="sub" style="margin-bottom:18px">启动即有「我的论文」工作区 + 空模板论文项目，工作台自动弹出</p>
+  <div class="grid2">
+    <div class="card"><p><strong>📂 预置工作区「我的论文」</strong></p><p style="font-size:14px;color:var(--muted)">位于便携包 <code>papers\我的论文</code>；打开后工作台自动打开（auto-open）。换机器/U 盘插到别处，<code>start.bat</code> 自动适配路径。</p></div>
+    <div class="card"><p><strong>📄 空模板论文项目</strong></p><p style="font-size:14px;color:var(--muted)"><code>data\pipeline\papers\p_demo</code>；自带空模板草稿（含工作台功能/排版说明），可直接开始写。</p></div>
+  </div>
+  <div class="card" style="max-width:min(800px,94vw);text-align:left;margin-top:14px">
+    <p style="font-size:14px"><strong>➕ 新建论文项目</strong>：工作台「📚 项目」旁「＋ 新建论文项目」→ 输入题目 → 建好项目 + 空模板草稿。一个项目 = 一篇论文，多篇互不干扰。</p>
+    <p style="font-size:14px;color:var(--muted);margin-top:6px">论文数据根：<code>data\pipeline\papers\</code>（引用清单/草稿/版本随 U 盘搬运）。</p>
+  </div>
+</section>
+
+<!-- 4 模型下载引导 -->
+<section class="slide">
+  <h2><span class="no">三</span>模型下载引导（lite 包）</h2>
+  <div class="code">
+    <span class="c"># 自动下载（国内镜像 hf-mirror 优先，失败自动提示手动）</span><br>
+    powershell -ExecutionPolicy Bypass -File scripts\download-models.ps1
+  </div>
+  <table class="table">
+    <tr><th>模型</th><th>大小</th><th>放置路径</th></tr>
+    <tr><td>BGE-M3 嵌入</td><td>0.6GB</td><td>tools\models\bge-m3-Q8_0.gguf</td></tr>
+    <tr><td>Qwen2.5 本地对话</td><td>1.8GB</td><td>tools\models\Qwen2.5-3B-Instruct-Q4_K_M.gguf</td></tr>
+    <tr><td>Hy-MT2 翻译</td><td>1.8GB</td><td>tools\models\Hy-MT2-1.8B-Q8_0.gguf</td></tr>
+  </table>
+  <div class="tip">💡 下载失败的文件会提示手动下载（HF 搜索 "bge-m3 gguf" 等，改名为上表文件名放入 tools\models）· full 包跳过此步</div>
+</section>
+
+<!-- 5 Key 申请配置 -->
+<section class="slide">
+  <h2><span class="no">四</span>API Key 申请与配置</h2>
+  <div class="card" style="max-width:min(880px,94vw)">
+    <p>复制 <strong>pipeline\config.yaml.example</strong> 为 <strong>pipeline\config.yaml</strong>，填入（<strong>全部可选</strong>——不填核心功能照常，仅云端/联网降级）：</p>
+  </div>
+  <table class="table">
+    <tr><th>Key</th><th>用途</th><th>申请地址</th></tr>
+    <tr><td><strong>DeepSeek</strong></td><td>云端分析（速览卡/核验/翻译）</td><td>platform.deepseek.com</td></tr>
+    <tr><td><strong>千帆 AppBuilder</strong></td><td>中文联网检索</td><td>cloud.baidu.com/product/AppBuilder</td></tr>
+    <tr><td><strong>OpenAlex</strong></td><td>国际联网检索</td><td>developers.openalex.org（email 获取）</td></tr>
+    <tr><td>DOAJ / arXiv</td><td>开放 API</td><td>无需 Key</td></tr>
+  </table>
+  <div class="code" style="max-width:min(620px,92vw)">
+    models.llm.cloud.api_key: <span class="c">"sk-你的DeepSeekKey"</span><br>
+    web_search.qianfan.api_key: <span class="c">"bce-v3/你的千帆Key"</span><br>
+    web_search.openalex.api_key: <span class="c">"你的OpenAlexKey"</span>
+  </div>
+</section>
+
+<!-- 6 方式B 源码构建 -->
+<section class="slide">
+  <h2><span class="no">五</span>方式 B：源码构建（开发者）</h2>
+  <div class="card" style="max-width:min(760px,94vw)"><p>前置：Node.js ≥ 18 · Python 3.11（勾选 Add to PATH）</p></div>
+  <div class="code">
+    <span class="c"># 1) 一键装依赖（DSH + Python 依赖 + 配置 + profile）</span><br>
+    powershell -ExecutionPolicy Bypass -File scripts\setup.ps1<br><br>
+    <span class="c"># 2) 下载模型（国内镜像优先）</span><br>
+    powershell -ExecutionPolicy Bypass -File scripts\download-models.ps1<br><br>
+    <span class="c"># 3) 编辑 pipeline\config.yaml 填 Key（§四）</span><br>
+    <span class="c"># 4) 启动</span><br>
+    start.bat
+  </div>
+  <div class="tip">💡 setup.ps1 做了什么：检查环境 → 本地装 DSH → venv + pip（清华镜像，87 包）→ 生成 config.yaml → 部署项目级 DSH 配置（不污染用户目录）</div>
+</section>
+
+<!-- 7 手动下载清单 -->
+<section class="slide">
+  <h2><span class="no">六</span>模型与依赖手动下载清单</h2>
+  <table class="table">
+    <tr><th>组件</th><th>放置路径</th><th>来源</th><th>License</th></tr>
+    <tr><td>BGE-M3</td><td>tools\models\bge-m3-Q8_0.gguf</td><td>hf-mirror（搜 "bge-m3 gguf"）</td><td>Apache-2.0</td></tr>
+    <tr><td>Qwen2.5</td><td>tools\models\Qwen2.5-3B-Instruct-Q4_K_M.gguf</td><td>hf-mirror.com/Qwen/Qwen2.5-3B-Instruct-GGUF</td><td>Apache-2.0</td></tr>
+    <tr><td>Hy-MT2</td><td>tools\models\Hy-MT2-1.8B-Q8_0.gguf</td><td>HF 搜 "Hy-MT2 gguf"</td><td>以来源页为准</td></tr>
+    <tr><td>llama.cpp</td><td>tools\llama\llama-server.exe</td><td>github.com/ggml-org/llama.cpp/releases</td><td>MIT</td></tr>
+    <tr><td>pandoc</td><td>tools\pandoc\</td><td>pandoc.org/installing.html</td><td>GPL-2.0</td></tr>
+    <tr><td>PaddleOCR</td><td>自动</td><td>随 pip 依赖安装</td><td>Apache-2.0</td></tr>
+  </table>
+  <div class="tip">💡 完整手动清单（精确 URL + 验证命令）见 <strong>docs/INSTALL.md</strong></div>
+</section>
+
+<!-- 8 启动验证 -->
+<section class="slide">
+  <h2><span class="no">七</span>启动验证</h2>
+  <table class="table">
+    <tr><th>检查项</th><th>位置</th><th>预期</th></tr>
+    <tr><td>主界面</td><td>http://127.0.0.1:3180</td><td>工作台面板 + 对话区</td></tr>
+    <tr><td>管线</td><td>http://127.0.0.1:8737/status</td><td>200 + 队列全 0</td></tr>
+    <tr><td>嵌入（full）</td><td>http://127.0.0.1:8083</td><td>在线</td></tr>
+    <tr><td>工作台功能</td><td>顶栏「📚 论文工作台」</td><td>引用链 / 速览卡 / 检索 / 输入资料</td></tr>
+    <tr><td>入库监控</td><td>一级 Tab</td><td>文档 / 切块计数显示</td></tr>
+  </table>
+  <div class="tip">💡 功能自检：提交一个 PDF 入库 → 监控进度条流转 → 检索命中（BGE-M3 在线时）</div>
+</section>
+
+<!-- 9 常见问题 -->
+<section class="slide">
+  <h2><span class="no">八</span>常见问题</h2>
+  <div class="card" style="max-width:min(880px,94vw);text-align:left">
+    <p>❓ <strong>start.bat 闪退？</strong> → 手动运行 <code>pipeline\.venv\Scripts\python.exe -m server.main</code> 看报错</p>
+    <p>❓ <strong>OCR 报 Paddle 无法打开模型？</strong> → 缓存路径含中文自动转 8.3 短路径；仍失败设 <code>PADDLE_PDX_CACHE_HOME</code> 到纯英文目录</p>
+    <p>❓ <strong>lite 没下模型就启动？</strong> → 管线可用、OCR/检索降级；补下模型后重启</p>
+    <p>❓ <strong>检索 score 恒 0？</strong> → 向量库未建——提交文档入库后 M4 自动索引（需 8083 在线）</p>
+    <p>❓ <strong>端口被占用？</strong> → 已有实例在跑（重复启动）；关旧的再启动，或改端口</p>
+    <p>❓ <strong>完全不懂命令行？</strong> → 用方式 A <strong>full 包</strong>：解压 → 双击 start.bat，全程零命令行</p>
+  </div>
+</section>
+
+<!-- 10 结尾 -->
+<section class="slide">
+  <h2><span class="no">🎉</span>装好了，开始写论文吧</h2>
+  <div class="card" style="max-width:min(760px,94vw)">
+    <p>① 装好并启动 → ② 打开 <strong>http://127.0.0.1:3180</strong> → ③ 批量入库文献 → ④ 读 PDF / 检索 / 速览卡 → ⑤ 引用登记写草稿 → ⑥ 与 AI 讨论 · 点评 → ⑦ DOCX 交付 🎓</p>
+  </div>
+  <p style="margin-top:20px;color:var(--brand);font-weight:700">有问题先看 docs/INSTALL.md 与两份手册 · 祝你论文顺利！</p>
+</section>
+
+</div>
+
+<script>
+  var slides = document.querySelectorAll('.slide');
+  var cur = 0;
+  var dotsEl = document.getElementById('dots');
+  for (var i = 0; i < slides.length; i++) {
+    var d = document.createElement('i');
+    if (i === 0) d.className = 'on';
+    dotsEl.appendChild(d);
+  }
+  var dots = dotsEl.querySelectorAll('i');
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    for (var k = 0; k < slides.length; k++) slides[k].classList.toggle('active', k === cur);
+    document.getElementById('page').textContent = '第 ' + (cur + 1) + ' 页 / 共 ' + slides.length + ' 页';
+    document.getElementById('bar').style.width = ((cur + 1) / slides.length * 100) + '%';
+    for (var j = 0; j < dots.length; j++) dots[j].className = (j === cur) ? 'on' : '';
+    window.scrollTo(0, 0);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown' || e.key === 'Enter') { e.preventDefault(); show(cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp' || e.key === 'Backspace') { e.preventDefault(); show(cur - 1); }
+  });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.card') || e.target.closest('.chip')) return;
+    show(e.clientX > window.innerWidth * 0.5 ? cur + 1 : cur - 1);
+  });
+  show(0);
+</script>
+</body>
+</html>

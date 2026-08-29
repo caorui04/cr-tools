@@ -1,0 +1,38 @@
+从以下论文首页文本中提取文献著录信息。引用格式为 {format}。
+
+输出严格 JSON，格式如下：
+{
+  "biblio": {
+    "authors": ["作者1", "作者2"],
+    "title": "论文标题",
+    "type": "类型",
+    "venue": "期刊/会议名称",
+    "year": 2023,
+    "volume": "卷号",
+    "issue": "期号",
+    "pages": "页码",
+    "doi": "DOI",
+    "publisher": "出版社（专著/论文集）",
+    "url": "URL（电子资源）"
+  },
+  "field_confidence": {
+    "authors": 0.95,
+    "title": 0.99,
+    "type": 0.9,
+    "venue": 0.6,
+    "year": 0.85,
+    "volume": 0.5,
+    "issue": 0.5,
+    "pages": 0.7,
+    "doi": 0.4
+  }
+}
+
+规则：
+- type: J=期刊, M=专著, C=论文集, D=学位论文, R=报告, EB/OL=电子资源
+- 缺失字段填 null，对应 confidence <= 0.3
+- field_confidence 值域 [0, 1]，表示你对各字段的确定程度
+- 仅输出 JSON，不要其他文字
+
+首页文本：
+{firstpage_text}

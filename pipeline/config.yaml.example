@@ -1,0 +1,50 @@
+# kb-pipeline 分发配置模板（M4 便携与开源；ADR-003 Key 剥离红线）
+# 用法：复制本文件为 config.yaml 并填入你的 Key（本文件不含任何真实密钥，可入库/发布）。
+# 路径约定（相对路径，相对管线运行目录 = <包根>/pipeline/）：
+#   - 数据根：../data/pipeline（包内 data/ 目录）
+#   - pandoc：../tools/pandoc/...（全量包自带；发布包按 README 引导下载 tools/ 后可用）
+# 开发模式可覆盖为绝对路径。
+
+pipeline_root: '../data/pipeline'
+http_port: 8737
+
+# pandoc（草稿保存生成 DOCX / docx 导入转换；缺失则降级跳过 DOCX 生成）
+pandoc_path: '../tools/pandoc/pandoc-3.10.1/pandoc.exe'
+
+limits:
+  retry_max: 3
+
+models:
+  llm:
+    prefer: llama_cpp
+    allow_cloud_fallback: false
+    llama_cpp:
+      port: 8082
+      model_name: "qwen2.5-3b"
+    # 云端分析后端（状态页「分析后端 → 云端」启用；速览卡/引用核验/翻译/书目提取共用）
+    # api_style: responses = DeepSeek V4 Responses API；chat_completions = OpenAI 兼容传统模式
+    cloud:
+      # 填入你的 DeepSeek API Key（申请：https://platform.deepseek.com）
+      api_key: "sk-你的DeepSeekKey"
+      base_url: "https://api.deepseek.com"
+      model: "deepseek-v4-flash"
+      api_style: "responses"
+      api_key_env: "DEEPSEEK_API_KEY"
+
+# 联网文献检索开关（arXiv 开放 API）。false = 完全本地模式。
+analysis:
+  web_search_enabled: true
+
+# 联网检索源 Key（可选：不填则对应适配器降级，本地检索不受影响）
+web_search:
+  adapters: ["qianfan_scholar", "openalex", "doaj", "arxiv"]
+  qianfan:
+    # 百度千帆 AppBuilder Key（百度学术 site 定向检索，免费 100 次/日）
+    # 申请：https://cloud.baidu.com/product/AppBuilder（控制台 https://console.bce.baidu.com）
+    # 文档：https://ai.baidu.com/ai-doc/AppBuilder/pmaxd1hvy
+    api_key: "bce-v3/你的千帆Key"
+  openalex:
+    # OpenAlex Key（可选，10000 credits/日；search $0.001/次 ≈1000 次/日封顶）
+    # 申请：https://developers.openalex.org（注册 email 获取）
+    api_key: "你的OpenAlexKey"
+    base_url: "https://api.openalex.org"

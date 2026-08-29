@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>论文知识库</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+  <!-- 左侧标签导航（竖向） -->
+  <aside id="sidebar">
+    <span class="logo" title="论文知识库">📚</span>
+    <div class="nav-links">
+      <a href="#import" title="导入">导入</a>
+      <a href="#docs" title="文档">文档</a>
+      <a href="#search" title="搜索">搜索</a>
+      <a href="#citations" title="引用链">引用链</a>
+      <a href="#literature" title="文献检索">检索</a>
+      <a href="#status" title="状态">状态</a>
+      <a href="#errors" title="异常">异常</a>
+    </div>
+  </aside>
+
+  <!-- 左 1/3：板块视图容器 -->
+  <main id="view-container"></main>
+
+  <!-- 右 2/3：PDF 预览常驻 -->
+  <section id="right-panel">
+    <div class="pdf-toolbar">
+      <button class="btn btn-sm" id="pdfPrev" disabled>◀</button>
+      <input id="pdfPage" class="ipt" type="number" min="1" value="1" style="width:52px;text-align:center" />
+      <span style="font-size:12px;color:var(--text-secondary)">/ <span id="pdfPages">?</span> 页</span>
+      <span id="pdfOrigPage" style="display:none;font-size:12px;color:var(--text-secondary);margin-left:6px"></span>
+      <button class="btn btn-sm" id="pdfNext" disabled>▶</button>
+      <span style="flex:1"></span>
+      <button class="btn btn-sm" id="pdfZoomOut">−</button>
+      <button class="btn btn-sm" id="pdfFit">适宽</button>
+      <button class="btn btn-sm" id="pdfZoomIn">＋</button>
+    </div>
+    <!-- 状态行（pdfBox 之外：渲染清空 pdfBox 时不影响状态显示） -->
+    <div id="pdfStatus" style="text-align:center;padding:6px;color:var(--text-secondary);font-size:12px">从左侧「文档」点开一篇，PDF 将在此预览</div>
+    <!-- 选区引用条（选中文字后显示） -->
+    <div id="pdfCiteBar" style="display:none;align-items:center;gap:8px;padding:6px 10px;margin-bottom:6px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px">
+      <span id="pdfCiteInfo" style="font-size:12px;color:#2e7d32;flex:1"></span>
+      <button class="btn btn-sm" id="pdfCiteBtn" style="background:#4caf50;color:#fff;border-color:#4caf50">📎 引用此段</button>
+    </div>
+    <div id="pdfBox" style="flex:1;overflow:auto;background:#525659;padding:12px;border-radius:var(--radius)"></div>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+</div>
+
+<script src="js/state.js?v=20260804e"></script>
+<script src="js/api.js?v=20260804e"></script>
+<script src="js/components/doc-card.js?v=20260804e"></script>
+<script src="js/views/import.js?v=20260804e"></script>
+<script src="js/views/docs.js?v=20260804e"></script>
+<script src="js/views/doc-detail.js?v=20260804e"></script>
+<script src="js/views/search.js?v=20260804e"></script>
+<script src="js/views/citations.js?v=20260804e"></script>
+<script src="js/views/literature.js?v=20260804e"></script>
+<script src="js/views/status.js?v=20260804e"></script>
+<script src="js/views/errors.js?v=20260804e"></script>
+<script src="js/pdf-viewer.js?v=20260804e"></script>
+<!-- PDF.js 经典版（UMD/IIFE）：在 pdf-viewer.js 之前加载，暴露 window.pdfjsLib -->
+<script src="vendor/pdfjs/pdf.min.js?v=20260804e"></script>
+<script src="js/app.js?v=20260804e"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+# cr-tools release repo .gitignore
+# Runtime / secrets / artifacts never enter the repo.
+
+# Python
+pipeline/.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Runtime data
+pipeline/sidecar/
+pipeline/assets/
+data/
+
+# Secrets (dev config has real keys; template is config.yaml.example)
+pipeline/config.yaml
+pipeline/.api_token
+.env
+
+# Models & tools (large, external download - see docs/INSTALL.md)
+tools/
+
+# DSH local install & project-local profile
+node_modules/
+.dsh-home/
+
+# Packaging artifacts
+portable/
+portable-full/
+portable-lite/

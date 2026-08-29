@@ -1,0 +1,23 @@
+{
+  "name": "cr-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "cr-tools 自研插件包：paper 领域模型（只读解析层，T4）+ 工作台 Host/Client 半区（M2/M3）。零运行时依赖（ADR-002 便携约束）。",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./domain": "./src/domain/index.js",
+    "./capture": "./src/domain/capture.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}
